@@ -1,0 +1,160 @@
+/* --- Animation --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* --- Layout --- */
+.dashboard-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  color: #000;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.summary-card {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  padding: 1rem;
+  border: 1px solid #000;
+  border-radius: 8px;
+}
+
+.donation-button {
+  display: block;
+  margin: 0 auto 2rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.donation-button:hover {
+  transform: scale(1.05);
+}
+
+.donation-history h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.donation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.donation-table th,
+.donation-table td {
+  border: 1px solid #000;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+/* --- Modal --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.5);
+  padding: 24px;
+  z-index: 1000;
+}
+
+.modal-box {
+  width: min(560px, 100%);
+  background: #fff;
+  color: #000;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.modal-box h3 {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.modal-box input,
+.modal-box textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cfcfcf;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  background: #fff;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+.modal-box input {
+  height: 48px;
+}
+
+.modal-box textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+/* Remove number input spinners */
+.modal-box input[type=number]::-webkit-inner-spin-button,
+.modal-box input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.modal-box input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* --- Modal buttons --- */
+.modal-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s ease;
+  background: #000;
+  color: #fff;
+}
+
+.modal-buttons .secondary {
+  background: #444;
+}
+
+.modal-buttons button:hover {
+  transform: translateY(-1px);
+}

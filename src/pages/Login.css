@@ -1,0 +1,93 @@
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideLeft {
+  from {transform: translateX(100px); opacity: 0;}
+  to {transform: translateX(0); opacity: 1;}
+}
+
+@keyframes slideRight {
+  from {transform: translateX(-100px); opacity: 0;}
+  to {transform: translateX(0); opacity: 1;}
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: black;
+}
+
+.login-box {
+  background-color: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  box-sizing: border-box;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.login-box.slide-left {
+  animation: slideLeft 0.5s ease-in-out;
+}
+
+.login-box.slide-right {
+  animation: slideRight 0.5s ease-in-out;
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-input {
+  width: 90%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.login-input:focus {
+  border-color: black;
+  box-shadow: 0 0 5px black;
+}
+
+.login-button {
+  width: 90%;
+  padding: 0.75rem;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  transform: scale(1.05);
+  background-color: #222;
+}
+
+.login-toggle {
+  cursor: pointer;
+  color: black;
+  text-align: center;
+  margin-top: 1rem;
+}

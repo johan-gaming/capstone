@@ -1,0 +1,14 @@
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+input:focus, select:focus {
+  border-color: black;
+  box-shadow: 0 0 5px black;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background-color: #222;
+}
