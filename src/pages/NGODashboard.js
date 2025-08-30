@@ -1,90 +1,114 @@
-import React,{useEffect,useState} from 'react';
+// src/components/NGODashboard.js
+import React,{useState,useEffect} from 'react';
 import './NGODashboard.css';
-import {collection,onSnapshot,query,orderBy,doc,updateDoc,getDoc} from 'firebase/firestore';
-import {auth,db} from '../firebaseConfig';
+import {db} from '../firebaseConfig';
+import {collection,getDocs,updateDoc,doc} from 'firebase/firestore';
 
 const NGODashboard = () => {
   const [donations,setDonations] = useState([]);
-  const [ngoName,setNgoName] = useState('');
+  const [loading,setLoading] = useState(true);
 
-  useEffect(()=>{
-    const fetchUserName = async()=>{
-      try{
-        const userDoc = await getDoc(doc(db,'users',auth.currentUser.uid));
-        if(userDoc.exists()){
-          setNgoName(userDoc.data().name || 'NGO');
-        }
-      } catch(err){
-        console.error('Error fetching NGO name:',err);
-      }
-    };
-    if(auth.currentUser) fetchUserName();
-  },[]);
-
-  useEffect(()=>{
-    const q = query(collection(db,'donations'),orderBy('createdAt','desc'));
-    const unsubscribe = onSnapshot(q,(snap)=>{
-      const data = snap.docs.map((doc)=>({
-        id:doc.id,
-        item:doc.data().item || 'Unnamed Item',
-        quantity:doc.data().quantity || 0,
-        status:doc.data().status || 'Pending',
-        notes:doc.data().notes || '—',
+  // Fetch donations
+  const fetchDonations = async() => {
+    try {
+      const querySnapshot = await getDocs(collection(db,'donations'));
+      const donationData = querySnapshot.docs.map(doc=>({
+        id: doc.id,
+        ...doc.data()
       }));
-      setDonations(data);
-    });
-    return ()=>unsubscribe();
-  },[]);
-
-  const handleClaim = async(id)=>{
-    try{
-      const donationRef = doc(db,'donations',id);
-      await updateDoc(donationRef,{ status:'Claimed' });
-      alert('Donation claimed!');
-    } catch(error){
-      console.error('Error claiming donation:',error);
-      alert('Failed to claim donation');
+      setDonations(donationData);
+    } catch(err){
+      console.error('Error fetching donations:',err);
+      alert('Failed to load donations.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Claim donation
+  const claimDonation = async(id) => {
+    try {
+      const donationRef = doc(db,'donations',id);
+      await updateDoc(donationRef,{status:'Claimed'});
+      fetchDonations();
+    } catch(err){
+      console.error('Error claiming donation:',err);
+    }
+  };
+
+  // Rate donor
+  const rateDonor = async(id,rating) => {
+    try {
+      const donationRef = doc(db,'donations',id);
+      await updateDoc(donationRef,{rating});
+      fetchDonations();
+    } catch(err){
+      console.error('Error rating donor:',err);
+    }
+  };
+
+  useEffect(()=>{
+    fetchDonations();
+  },[]);
+
   return (
-    <div className="ngo-container fade-in">
-      <h1 className="ngo-header">Welcome, {ngoName}</h1>
-      <div className="ngo-donations">
+    <div className="dashboard-container fade-in">
+      <h1 className="dashboard-header">NGO Dashboard</h1>
+
+      <div className="donation-history">
         <h2>Available Donations</h2>
-        <table className="ngo-table">
+        <table className="donation-table">
           <thead>
             <tr>
-              <th>Food Item</th>
+              <th>Donor</th>
+              <th>Item</th>
               <th>Quantity</th>
               <th>Status</th>
-              <th>Notes</th>
               <th>Action</th>
+              <th>Rating</th>
             </tr>
           </thead>
           <tbody>
-            {donations.map((donation,index)=>(
-              <tr key={donation.id} className="fade-in">
-                <td>{donation.item}</td>
-                <td>{donation.quantity}</td>
-                <td>{donation.status}</td>
-                <td>{donation.notes}</td>
-                <td>
-                  {donation.status!=='Claimed' ? (
-                    <button onClick={()=>handleClaim(donation.id)} style={{
-                      padding:'6px 12px',
-                      backgroundColor:'#000',
-                      color:'#fff',
-                      border:'none',
-                      borderRadius:'4px',
-                      cursor:'pointer'
-                    }}>Claim</button>
-                  ) : (
-                    <span style={{fontStyle:'italic',color:'#555'}}>Claimed</span>
-                  )}
-                </td>
+            {loading ? (
+              <tr>
+                <td colSpan="6">Loading...</td>
               </tr>
-            ))}
+            ) : donations.length>0 ? (
+              donations.map((donation)=>(
+                <tr key={donation.id}>
+                  <td>{donation.donorName}</td>
+                  <td>{donation.item}</td>
+                  <td>{donation.quantity}</td>
+                  <td>{donation.status}</td>
+                  <td>
+                    {donation.status==='Available' ? (
+                      <button onClick={()=>claimDonation(donation.id)}>
+                        Claim
+                      </button>
+                    ) : (
+                      'Claimed'
+                    )}
+                  </td>
+                  <td>
+                    <select
+                      value={donation.rating || ''}
+                      onChange={(e)=>rateDonor(donation.id,e.target.value)}
+                    >
+                      <option value="">Rate</option>
+                      <option value="1">⭐</option>
+                      <option value="2">⭐⭐</option>
+                      <option value="3">⭐⭐⭐</option>
+                      <option value="4">⭐⭐⭐⭐</option>
+                      <option value="5">⭐⭐⭐⭐⭐</option>
+                    </select>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6">No donations available.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

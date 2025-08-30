@@ -1,53 +1,55 @@
-@keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.4s ease-in-out;
-  }
-  
-  .ngo-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    color: #000;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .ngo-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 2rem;
-  }
-  
-  .ngo-donations h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .ngo-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .ngo-table th,
-  .ngo-table td {
-    border: 1px solid #000;
-    padding: 0.75rem;
-    text-align: center;
-  }
-  
-  .ngo-table tr:hover {
-    background-color: #f0f0f0;
-  }
-  
+.ngo-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.ngo-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ngo-donations h2 {
+  margin-bottom: 10px;
+}
+
+.ngo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.ngo-table th, .ngo-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.ngo-table th {
+  background-color: #000;
+  color: #fff;
+}
+
+.ngo-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.btn-claim {
+  padding: 6px 12px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn-claim:hover {
+  background-color: #333;
+}
+
+.claimed-text {
+  font-style: italic;
+  color: #777;
+}

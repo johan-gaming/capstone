@@ -1,8 +1,8 @@
 import React,{useState,useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {signInWithEmailAndPassword,createUserWithEmailAndPassword} from 'firebase/auth';
-import {doc,setDoc,getDoc} from 'firebase/firestore';
 import {auth,db} from '../firebaseConfig';
+import {createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth';
+import {doc,setDoc,getDoc} from 'firebase/firestore';
 
 const Login = () => {
   const [email,setEmail] = useState('');
@@ -17,11 +17,16 @@ const Login = () => {
     e.preventDefault();
     try {
       if(isRegistering){
-        // ✅ Register new user
-        const userCred = await createUserWithEmailAndPassword(auth,email,password);
+        // ✅ Create user with Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+        const user = userCredential.user;
 
-        // ✅ Save role + name in Firestore
-        await setDoc(doc(db,'users',userCred.user.uid),{ role,name });
+        // ✅ Save extra fields (name + role) in Firestore
+        await setDoc(doc(db,'users',user.uid),{
+          name,
+          email,
+          role
+        });
 
         // ✅ Redirect based on role
         if(role === 'ngo'){
@@ -29,24 +34,27 @@ const Login = () => {
         } else {
           navigate('/donor-dashboard');
         }
+
       } else {
         // ✅ Login existing user
-        const userCred = await signInWithEmailAndPassword(auth,email,password);
+        const userCredential = await signInWithEmailAndPassword(auth,email,password);
+        const user = userCredential.user;
 
-        // ✅ Fetch user role from Firestore
-        const userDoc = await getDoc(doc(db,'users',userCred.user.uid));
-        if(userDoc.exists()){
-          const userRole = userDoc.data().role;
-          console.log("User role from Firestore:", userRole); // Debugging log
-          if(userRole === 'ngo'){
+        // ✅ Fetch role from Firestore
+        const docRef = doc(db,'users',user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+          const data = docSnap.data();
+          if(data.role === 'ngo'){
             navigate('/ngo-dashboard');
-          } else if(userRole === 'donor'){
+          } else if(data.role === 'donor'){
             navigate('/donor-dashboard');
           } else {
-            alert("Unknown role. Please contact admin.");
+            alert('Unknown role. Please contact admin.');
           }
         } else {
-          alert("No role found for this user in Firestore.");
+          alert('No user profile found.');
         }
       }
     } catch(err){

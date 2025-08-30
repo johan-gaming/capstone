@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {collection, addDoc, Timestamp} from 'firebase/firestore';
+import {collection, addDoc, doc, getDoc, updateDoc, increment, Timestamp} from 'firebase/firestore';
 import {auth, db} from '../firebaseConfig';
 
 const DonorForm = ({onClose, onSuccess}) => {
@@ -23,8 +23,21 @@ const DonorForm = ({onClose, onSuccess}) => {
       return;
     }
 
+    if (!auth.currentUser) {
+      alert('⚠️ You must be logged in to post a donation.');
+      return;
+    }
+
     setLoading(true);
     try {
+      // 🔑 Fetch donor name
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      const donorName = userDoc.exists()
+        ? (userDoc.data().name || auth.currentUser.email)
+        : auth.currentUser.email;
+
+      // 🔑 Create new donation
       const newDonation = {
         item: formData.item,
         quantity: parseInt(formData.quantity),
@@ -33,10 +46,17 @@ const DonorForm = ({onClose, onSuccess}) => {
         pickupTime: formData.pickupTime,
         status: 'Pending',
         donorId: auth.currentUser.uid,
+        donorName,
         createdAt: Timestamp.now()
       };
 
       await addDoc(collection(db, 'donations'), newDonation);
+
+      // 🔑 Increment total donations count
+      await updateDoc(userRef, {
+        totalDonations: increment(1)
+      });
+
       onSuccess();
     } catch (error) {
       console.error('Error posting donation:', error);
@@ -80,7 +100,6 @@ const DonorForm = ({onClose, onSuccess}) => {
       <input
         type="datetime-local"
         name="pickupTime"
-        placeholder="Pickup Time"
         value={formData.pickupTime}
         onChange={handleChange}
         required
@@ -98,11 +117,7 @@ const DonorForm = ({onClose, onSuccess}) => {
         <button type="submit" disabled={loading} className="btn-submit">
           {loading ? 'Posting...' : 'Submit'}
         </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="btn-cancel"
-        >
+        <button type="button" onClick={onClose} className="btn-cancel">
           Cancel
         </button>
       </div>
